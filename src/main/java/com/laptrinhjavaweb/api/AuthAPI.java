@@ -51,7 +51,6 @@ public class AuthAPI {
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtTokenProvider.generateToken(authentication);
-		System.out.println(authentication.getName());
 		long userID = ((CustomUserDetails) authentication.getPrincipal()).getId();
 		UserEntity user = userRepository.findById(userID).orElse(null);
 		if (user.getRefreshToken() != null)
