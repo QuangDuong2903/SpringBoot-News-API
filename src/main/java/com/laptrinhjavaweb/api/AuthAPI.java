@@ -38,7 +38,7 @@ public class AuthAPI {
 
 	@Autowired
 	private IRefreshTokenService refreshTokenService;
-	
+
 	@Autowired
 	private RefreshTokenRepository refreshTokenRepository;
 
@@ -57,15 +57,17 @@ public class AuthAPI {
 			return new LoginResponse(jwt, refreshTokenService.verifyExpiration(user.getRefreshToken()).getToken());
 		return new LoginResponse(jwt, refreshTokenService.createRefreshToken(userID).getToken());
 	}
-	
+
 	@PostMapping(value = "/refreshtoken")
 	public ResponseEntity<?> refreshToken(@Validated @RequestBody RefreshTokenRequest refreshTokenRequest) {
 		RefreshTokenEntity refreshToken = refreshTokenRepository.findByToken(refreshTokenRequest.getRefreshToken());
-		if(refreshToken == null)
+		if (refreshToken == null)
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Refresh token not found");
-		if(refreshTokenService.isExpiredToken(refreshToken))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token was expired. Please make a new signin request");;
+		if (refreshTokenService.isExpiredToken(refreshToken))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token was expired. Please make a new signin request");
 		String jwt = jwtTokenProvider.generateToken(refreshToken.getUser().getUserName());
-		return ResponseEntity.ok().body(new RefreshTokenResponse(jwt, refreshToken.getToken()));
+		long userID = refreshToken.getUser().getId();
+		refreshTokenRepository.delete(refreshToken);
+		return ResponseEntity.ok().body(new RefreshTokenResponse(jwt, refreshTokenService.createRefreshToken(userID).getToken()));
 	}
 }

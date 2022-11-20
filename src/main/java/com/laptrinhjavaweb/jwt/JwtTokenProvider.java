@@ -2,6 +2,7 @@ package com.laptrinhjavaweb.jwt;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,17 @@ import io.jsonwebtoken.UnsupportedJwtException;
 @Component
 public class JwtTokenProvider {
 
-	private final String JWT_SECRET = "quangduong";
+	//private final String JWT_SECRET = "quangduong";
 
 	//private final long JWT_EXPIRATION = 604800000L;
 	
-	private final long JWT_EXPIRATION = 3600000L;
+	//private final long JWT_EXPIRATION = 3600000L;
+	
+	@Value("${jwt.JWT_SECRET}")
+	private String JWT_SECRET;
+	
+	@Value("${jwt.JWT_EXPIRATION}")
+	private long JWT_EXPIRATION;
 
 	public String generateToken(Authentication authentication) {
 		Date now = new Date();
@@ -72,5 +79,4 @@ public class JwtTokenProvider {
 		}
 		return false;
 	}
-	
 }

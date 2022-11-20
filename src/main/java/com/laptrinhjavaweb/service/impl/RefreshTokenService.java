@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.laptrinhjavaweb.entity.RefreshTokenEntity;
@@ -20,7 +21,10 @@ public class RefreshTokenService implements IRefreshTokenService {
 	@Autowired
 	private UserRepository userRepository;
 
-	private final long RFT_EXPIRATION = 60000L;
+	//private final long RFT_EXPIRATION = 60000L;
+	
+	@Value("${rft.RFT_EXPIRATION}")
+	private long RFT_EXPIRATION;
 
 	@Override
 	public RefreshTokenEntity createRefreshToken(long userID) {
