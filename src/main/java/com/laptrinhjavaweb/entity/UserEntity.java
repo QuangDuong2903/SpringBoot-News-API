@@ -24,6 +24,15 @@ public class UserEntity extends BaseEntity {
 	@Column(name = "fullname")
 	private String fullName;
 	
+	@Column(name = "avatar")
+	private String avatar;
+	
+	@Column(name = "email")
+	private String email;
+	
+	@Column(name = "type")
+	private int type;
+	
 	@Column(name = "status")
 	private Integer status;
 	
@@ -80,5 +89,29 @@ public class UserEntity extends BaseEntity {
 
 	public void setRefreshToken(RefreshTokenEntity refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 }

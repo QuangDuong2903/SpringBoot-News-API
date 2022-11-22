@@ -9,7 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.laptrinhjavaweb.constant.SystemConstant;
 import com.laptrinhjavaweb.converter.UserConverter;
+import com.laptrinhjavaweb.dto.GoogleUserDTO;
 import com.laptrinhjavaweb.dto.UserDTO;
 import com.laptrinhjavaweb.entity.RoleEntity;
 import com.laptrinhjavaweb.entity.UserEntity;
@@ -28,10 +30,10 @@ public class UserService implements IUserService {
 
 	@Autowired
 	private UserConverter userConverter;
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
+
 	@Override
 	@Transactional
 	public ResponseEntity<UserDTO> save(UserDTO userDTO) {
@@ -40,6 +42,8 @@ public class UserService implements IUserService {
 			UserEntity oldUserEntity = userRepository.findById(userDTO.getId()).orElse(null);
 			userEntity = userConverter.toEntity(userDTO, oldUserEntity);
 		} else {
+			if (userRepository.findOneByUserNameAndStatus(userDTO.getUserName(), SystemConstant.ACTIVE_STATUS) != null)
+				return ResponseEntity.badRequest().body(null);
 			userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 			userEntity = userConverter.toEntity(userDTO);
 		}
@@ -66,7 +70,15 @@ public class UserService implements IUserService {
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().body(e.getMessage());
 		}
-		
 		return ResponseEntity.ok().body("Delete successfully");
+	}
+
+	@Override
+	public UserDTO save(GoogleUserDTO googleUserDTO) {
+		UserEntity userEntity = userConverter.toEntity(googleUserDTO);
+		List<RoleEntity> roles = new ArrayList<>();
+		roles.add(roleRepository.findOneByCode("ROLE_USER"));
+		userEntity.setRoles(roles);
+		return userConverter.toDTO(userRepository.save(userEntity));
 	}
 }
